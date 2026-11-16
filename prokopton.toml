@@ -1,0 +1,80 @@
+# A ProkoptonML product: this file describes the app. As it comes from the
+# template it is the Palmer Penguins app, which predicts a penguin's species
+# from its measurements; replace it with your own (see docs/new-product.md).
+#
+# Any value can be overridden with an environment variable, e.g.
+# PROKOPTON_PATHS__MODELS_DIR=/some/folder
+
+schema = 4
+
+name = "penguins"
+title = "Palmer Penguins"
+
+[data]
+# The release of the data the app is built from (shown by GET /version)
+release = "palmerpenguins-0.1.1"
+
+[paths]
+# Generated, and git-ignored (as is all of data/)
+models_dir = "data/models/penguins"
+
+[mlflow]
+tracking_uri = "sqlite:///data/mlflow/mlflow.db"
+artifact_dir = "data/mlflow/artifacts"
+
+[models.species]
+kind = "core.tabular-classifier"
+card = "model-cards/species.md"
+
+[models.species.table]
+path = "dataset/penguins.csv"
+target = "species"
+numeric = ["bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"]
+categorical = ["island", "sex"]
+
+[models.species.split]
+validation_fraction = 0.2
+test_fraction = 0.2
+seed = 42
+
+[models.species.training]
+c_values = [0.1, 1.0, 10.0]
+
+[pipeline]
+stages = ["split", "train", "evaluate", "card", "bundle"]
+
+[stages.split]
+kind = "core.tabular-split"
+model = "species"
+
+[stages.train]
+kind = "core.tabular-train"
+model = "species"
+
+[stages.evaluate]
+kind = "core.tabular-evaluate"
+model = "species"
+
+[stages.card]
+kind = "core.tabular-card"
+model = "species"
+
+[stages.bundle]
+kind = "core.bundle"
+
+# How an answer is made: POST /classify with one record
+[serving]
+endpoint = "classify"
+description = "Predict a penguin's species from its measurements, island and sex."
+chain = ["record", "species"]
+
+[serving.steps.record]
+kind = "core.record-input"
+model = "species"
+# Row 1 of the data: an Adélie penguin from Torgersen
+example = { bill_length_mm = 39.1, bill_depth_mm = 18.7, flipper_length_mm = 181, body_mass_g = 3750, island = "Torgersen", sex = "male" }
+
+[serving.steps.species]
+kind = "core.classifier"
+model = "species"
+threshold = 0.9

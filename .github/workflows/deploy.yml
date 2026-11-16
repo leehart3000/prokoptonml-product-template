@@ -1,0 +1,36 @@
+name: Deploy
+
+# Deploys the product's API with the platform's reusable workflow, pinned to
+# a platform release by its commit (with the tag as a comment, as for
+# actions): it builds the image with the serving bundle named in
+# infra/deploy/app.env, runs the known-answer checks (tests/known-answers)
+# against it, pushes it and deploys it to Cloud Run. Called by the Release
+# workflow for each v* tag, or run by hand from main (Actions > Deploy > Run
+# workflow) once infra/deploy/app.env is filled in.
+on:
+  workflow_call:
+    inputs:
+      check_public:
+        type: boolean
+        default: true
+  workflow_dispatch:
+    inputs:
+      check_public:
+        description: "Check the live service after deploying (leave off for the very first deploy, before the service is made public)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Cloud Run
+    uses: leehart3000/prokoptonml/.github/workflows/deploy-cloud-run.yml@8ada292045c59b757ac704cd32a4239dbddbdf48 # v0.2.0a7
+    with:
+      settings: infra/deploy/app.env
+      checks: tests/known-answers
+      check_public: ${{ inputs.check_public }}
+    permissions:
+      contents: read
+      id-token: write # To sign in to Google with Workload Identity Federation

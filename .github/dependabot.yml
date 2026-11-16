@@ -1,0 +1,27 @@
+# Dependabot configuration
+# https://docs.github.com/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+#
+# Keeps the SHA-pinned GitHub Actions up to date. Python and conda packages
+# are managed by Pixi (pixi.lock, refreshed weekly by update-lockfile.yml);
+# the platform (prokopton-ml, and its deploy workflow) is raised on purpose,
+# in pixi.toml, the Dockerfile and deploy.yml together.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/London
+    # Wait a week after a release before proposing it (supply-chain protection)
+    cooldown:
+      default-days: 7
+    # The platform's deploy workflow is raised with the platform version, on purpose
+    ignore:
+      - dependency-name: "leehart3000/prokoptonml*"
+    groups:
+      github-actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci

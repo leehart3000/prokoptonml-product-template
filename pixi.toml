@@ -1,0 +1,53 @@
+# A ProkoptonML product. The platform comes from PyPI at an exact version
+# (prokopton-ml); this repository holds the app's config, data, model cards,
+# checks and deploy settings.
+
+[workspace]
+name = "penguins"
+channels = ["conda-forge"]
+platforms = ["osx-64", "osx-arm64", "linux-64"]
+requires-pixi = ">=0.84"
+
+# The platform's scientific stack, from conda-forge
+[dependencies]
+python = "3.13.*"
+pydantic = ">=2.11,<3"
+numpy = ">=2"
+pandas = ">=2.2"
+pyarrow = ">=19"
+mlflow = ">=3.1,<4"
+scikit-learn = ">=1.6"
+scipy = ">=1.13"
+fastapi = ">=0.162.4,<0.163"
+uvicorn = ">=0.54.0,<0.55"
+
+# The platform, pinned exactly (keep in step with PROKOPTON_ML_VERSION in the
+# Dockerfile and the deploy workflow's pin; `pixi run check` compares them)
+[pypi-dependencies]
+prokopton-ml = { version = "==0.2.0a7", extras = ["serve"] }
+
+[feature.dev.dependencies]
+ruff = "*"
+
+[feature.dev.tasks]
+format = "ruff format ."
+format-check = "ruff format --check ."
+lint = "ruff check ."
+check-config = "python scripts/check_config.py"
+check = { depends-on = ["format-check", "lint", "check-config"] }
+# The known-answer checks (tests/known-answers) against the local bundle, as
+# every deploy does against the new image
+known-answers = "prokopton-ml check data/models/penguins/bundle tests/known-answers"
+# pixi run release vX.Y.Z: tag main, follow the Release workflow (see
+# docs/new-product.md); add --check-url when the product has a live page
+release = "prokopton-ml release --name 'Palmer Penguins'"
+
+[tasks]
+# The pipeline (prokopton-ml stages lists the stages, with when each last ran)
+stages = "prokopton-ml stages"
+pipeline = "prokopton-ml run --all"
+serve = { cmd = "uvicorn --factory prokopton.ml.serving.app:create_app_from_env --port 8080", env = { PROKOPTON_BUNDLE = "data/models/penguins/bundle" } }
+
+[environments]
+default = { features = ["dev"], solve-group = "default" }
+prod = { features = [], solve-group = "default" }

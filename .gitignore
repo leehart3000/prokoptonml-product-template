@@ -1,0 +1,28 @@
+# --- Operating system ---
+.DS_Store
+Thumbs.db
+
+# --- Editors ---
+*.code-workspace
+.vscode/
+.idea/
+
+# --- Secrets and local environment ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+gcp-key*.json
+
+# --- Pixi ---
+.pixi/*
+!.pixi/config.toml
+
+# --- Data, models, MLflow and bundles (generated; never committed) ---
+/data/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.ruff_cache/
