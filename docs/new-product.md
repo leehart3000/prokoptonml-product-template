@@ -66,7 +66,7 @@ deploy workflow (`.github/workflows/deploy.yml`), which calls the platform's
 `deploy-cloud-run.yml` by its release's commit, with the tag as a comment:
 
 ```bash
-V=0.2.0a7
+V=0.2.1
 SHA=$(gh api repos/leehart3000/prokoptonml/commits/v$V --jq .sha)
 # then set ==$V in pixi.toml, ARG PROKOPTON_ML_VERSION=$V in the Dockerfile,
 # and deploy-cloud-run.yml@$SHA # v$V in .github/workflows/deploy.yml

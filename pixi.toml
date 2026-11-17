@@ -24,7 +24,7 @@ uvicorn = ">=0.54.0,<0.55"
 # The platform, pinned exactly (keep in step with PROKOPTON_ML_VERSION in the
 # Dockerfile and the deploy workflow's pin; `pixi run check` compares them)
 [pypi-dependencies]
-prokopton-ml = { version = "==0.2.0a7", extras = ["serve"] }
+prokopton-ml = { version = "==0.2.1", extras = ["serve"] }
 
 [feature.dev.dependencies]
 ruff = "*"

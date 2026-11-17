@@ -26,7 +26,7 @@ permissions:
 jobs:
   deploy:
     name: Cloud Run
-    uses: leehart3000/prokoptonml/.github/workflows/deploy-cloud-run.yml@8ada292045c59b757ac704cd32a4239dbddbdf48 # v0.2.0a7
+    uses: leehart3000/prokoptonml/.github/workflows/deploy-cloud-run.yml@5cfbc08d67425cab94a01cccaf9cbe790f52e31f # v0.2.1
     with:
       settings: infra/deploy/app.env
       checks: tests/known-answers
